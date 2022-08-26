@@ -4,16 +4,31 @@ services:
   localstack:
     container_name: "localstack-test"
     image: localstack/localstack:latest
-    network_mode: bridge
+    hostname: localstack
     privileged: true
+    networks:
+      - localstack-net
     ports:
-      - '4566:4566'
+      - "4566-4599:4566-4599"
+      - "${PORT_WEB_UI-8080}:${PORT_WEB_UI-8080}"
     environment:
-      - SERVICES=${SERVICES- }
-      - DATA_DIR=/tmp/localstack
+      - SERVICES=s3,sqs,lambda,cloudformation,sts,iam,cloudwatch,apigateway,events
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - PORT_WEB_UI=8080
       - LAMBDA_EXECUTOR=docker-reuse
+      - LAMBDA_REMOTE_DOCKER=false
+      - LAMBDA_REMOVE_CONTAINERS=true
+      - KINESIS_ERROR_PROBABILITY=${KINESIS_ERROR_PROBABILITY- }
       - DOCKER_HOST=unix:///var/run/docker.sock
+      - HOST_TMP_FOLDER=${TMPDIR}
       - AWS_EXECUTION_ENV=true
     volumes:
-      - ".volume/tmp/localstack:/tmp/localstack"
+      - ./data:/tmp/localstack
       - "/var/run/docker.sock:/var/run/docker.sock"
+      - ./bin:/docker-entrypoint-initaws.d
+networks:
+  localstack-net:
+    external: false
+    driver: bridge
+    name: localstack-net
