@@ -7,7 +7,7 @@ import uuid
 import boto3
 
 if 'LOCALSTACK_HOSTNAME' in os.environ:
-    dynamodb_endpoint = 'http://%s:4566' % os.environ['LOCALSTACK_HOSTNAME']
+    dynamodb_endpoint = f"http://{os.environ['LOCALSTACK_HOSTNAME']}:4566"
     dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_endpoint)
 else:
     dynamodb = boto3.resource('dynamodb')
@@ -19,7 +19,7 @@ def createCustomer(event, context):
     if 'firstName' not in data:
         logging.error("Validation Error")
         raise Exception("Couldn't create the Customer.")
-    
+
     timestamp = str(time.time())
 
     table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
@@ -35,10 +35,4 @@ def createCustomer(event, context):
     # write the Customer to the database
     table.put_item(Item=customer)
 
-    # create a response
-    response = {
-        "statusCode": 200,
-        "body": json.dumps(customer)
-    }
-
-    return response
+    return {"statusCode": 200, "body": json.dumps(customer)}

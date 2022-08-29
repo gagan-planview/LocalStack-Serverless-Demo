@@ -5,6 +5,7 @@ frameworkVersion: ">=1.1.0 <=2.70.0"
 provider:
   name: aws
   runtime: python3.8
+  lambdaHashingVersion: 20201221
   environment:
     DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
   iamRoleStatements:
@@ -16,6 +17,11 @@ provider:
         - dynamodb:PutItem
         - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+package:
+
+  exclude:
+    - data/**
+    - .volume/**
 
 functions:
   create:
