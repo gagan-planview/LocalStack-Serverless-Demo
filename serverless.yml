@@ -8,6 +8,7 @@ provider:
   lambdaHashingVersion: 20201221
   environment:
     DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+    S3_BUCKET: ${self:service}-${opt:stage, self:provider.stage}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -24,7 +25,12 @@ provider:
         - lambda:InvokeAsync
       Resource:
         - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
-
+    - Effect: Allow
+      Action:
+        - s3:GetObject
+        - s3:GetBucketNotification
+        - s3:PutBucketNotification
+      Resource: "arn:aws:s3:::${self:provider.environment.S3_BUCKET}/*"
 package:
 
   exclude:
@@ -86,23 +92,8 @@ functions:
           cors: true
 
 resources:
-  Resources:
-    CustomersDynamoDbTable:
-      Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Retain
-      Properties:
-        AttributeDefinitions:
-          -
-            AttributeName: id
-            AttributeType: S
-        KeySchema:
-          -
-            AttributeName: id
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.DYNAMODB_TABLE}
+    - ${file(resources/dynamo_resource.yml)}
+    - ${file(resources/s3_bucket_resource.yml)}
 
 plugins:
   - serverless-localstack
