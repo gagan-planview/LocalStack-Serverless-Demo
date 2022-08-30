@@ -15,27 +15,35 @@ CHARSET = "UTF-8"
 
 def sendEmail(event, context):
 
-    response = ses_client.send_email(
-        Source='hackathonSourceEmail@planview.com',
-        Destination={
-            'ToAddresses': ['hackathonDestinatiomEmail@planview.com'],
-        },
-        ReplyToAddresses=['hackathonSourceEmail@planview.com'],
-        Message={
-            'Subject': {
-                'Data': 'New customer created',
-                'Charset': 'utf-8'
+    data = json.loads(event['body'])
+
+    if 'email' not in data:
+        logging.error("Validation Error")
+        raise Exception("Email not found.")
+
+    else:
+        destinationEmail = data['email']
+        response = ses_client.send_email(
+            Source='hackathonSourceEmail@planview.com',
+            Destination={
+                'ToAddresses': [destinationEmail],
             },
-            'Body': {
-                'Text': {
+            ReplyToAddresses=['hackathonSourceEmail@planview.com'],
+            Message={
+                'Subject': {
                     'Data': 'New customer created',
                     'Charset': 'utf-8'
                 },
-                'Html': {
-                    'Data': 'New customer created',
-                    'Charset': 'utf-8'
+                'Body': {
+                    'Text': {
+                        'Data': 'New customer created',
+                        'Charset': 'utf-8'
+                    },
+                    'Html': {
+                        'Data': 'New customer created',
+                        'Charset': 'utf-8'
+                    }
                 }
             }
-        }
-    )
+        )
     return {"statusCode": 200, "body": 'New customer created in Localstack'}
