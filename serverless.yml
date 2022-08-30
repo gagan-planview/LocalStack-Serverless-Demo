@@ -91,6 +91,20 @@ functions:
           method: post
           cors: true
 
+  backup:
+    handler: customers/backupCustomers.backupCustomers
+    events:
+      - http:
+          path: backupcustomers
+          method: get
+          cors: true
+      - s3:
+          bucket: ${self:provider.environment.S3_BUCKET}
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: uploads/
+          existing: true
+
 resources:
     - ${file(resources/dynamo_resource.yml)}
     - ${file(resources/s3_bucket_resource.yml)}
