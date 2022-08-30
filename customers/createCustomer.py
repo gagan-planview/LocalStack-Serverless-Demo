@@ -5,6 +5,8 @@ import time
 import uuid
 
 import boto3
+# from boto3 import client as boto3_client
+from boto3 import session
 
 if 'LOCALSTACK_HOSTNAME' in os.environ:
     dynamodb_endpoint = f"http://{os.environ['LOCALSTACK_HOSTNAME']}:4566"
@@ -12,6 +14,7 @@ if 'LOCALSTACK_HOSTNAME' in os.environ:
 else:
     dynamodb = boto3.resource('dynamodb')
 
+lambda_client = boto3.client('lambda')
 
 def createCustomer(event, context):
 

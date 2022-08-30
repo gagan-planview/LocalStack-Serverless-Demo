@@ -11,12 +11,20 @@ provider:
   iamRoleStatements:
     - Effect: Allow
       Action:
+        - ses:SendEmail
+        - ses:SendRawEmail
         - dynamodb:Query
         - dynamodb:Scan
         - dynamodb:GetItem
         - dynamodb:PutItem
         - dynamodb:DeleteItem
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+        - lambda:InvokeAsync
+      Resource:
+        - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+
 package:
 
   exclude:
@@ -63,6 +71,18 @@ functions:
       - http:
           path: customers/{id}
           method: put
+          cors: true
+
+  sendEmail:
+    handler: customers/sendEmail.sendEmail
+    events:
+      - http:
+          path: customers/sendEmail
+          method: post
+          cors: true
+      - http:
+          path: customers
+          method: post
           cors: true
 
 resources:
