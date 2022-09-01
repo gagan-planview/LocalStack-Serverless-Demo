@@ -1,7 +1,6 @@
 /.idea/
 /.serverless/
 /.volume/tmp/localstack/
-/customers/
 /node_modules/
 /package.json
 /package-lock.json
