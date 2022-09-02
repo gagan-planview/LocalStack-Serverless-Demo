@@ -32,6 +32,7 @@ def createCustomer(event, context):
         'id': str(uuid.uuid1()),
         'firstName': data['firstName'],
         'lastName': data['lastName'],
+        'email': data['email'],
         'createdAt': timestamp,
         'updatedAt': timestamp,
     }
@@ -69,4 +70,4 @@ def createCustomer(event, context):
             }
         )
 
-    return {"statusCode": 200, "body": json.dumps(customer)}
+    return {"statusCode": 200, "body": json.dumps(customer) + f'Email sent to {destinationEmail}'}

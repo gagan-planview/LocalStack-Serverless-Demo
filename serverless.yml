@@ -86,10 +86,6 @@ functions:
           path: customers/sendEmail
           method: post
           cors: true
-      - http:
-          path: customers
-          method: post
-          cors: true
 
   backup:
     handler: customers/backupCustomers.backupCustomers
