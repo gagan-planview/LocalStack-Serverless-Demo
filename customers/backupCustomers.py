@@ -26,6 +26,6 @@ def backupCustomers(event, context):
     opt_file.write(json.dumps(result_body))
     opt_file.flush()
     with open(opt_file.name, mode="r", encoding="utf-8") as reader:
-        s3.Bucket(os.environ['S3_BUCKET']).put_object(Key="steve", Body=reader.read())
+        s3.Bucket(os.environ['S3_BUCKET']).put_object(Key="HACKATHON", Body=reader.read())
     opt_file.close()
     return {"statusCode": 200, "body": "Customer List BackedUp"}
